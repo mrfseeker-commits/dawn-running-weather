@@ -7,7 +7,6 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       playwright install chromium
-      playwright install-deps chromium
     startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
@@ -16,4 +15,6 @@ services:
         generateValue: true
       - key: FLASK_ENV
         value: production
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: /opt/render/.cache/ms-playwright
     autoDeploy: true
