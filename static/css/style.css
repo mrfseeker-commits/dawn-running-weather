@@ -1,0 +1,363 @@
+/* 새벽런닝 날씨 앱 스타일 */
+
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+
+    /* 라이트 모드 색상 */
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+    --hover-bg: #e9ecef;
+    --input-bg: #ffffff;
+    --navbar-bg: #0d6efd;
+    --footer-bg: #f8f9fa;
+    --weather-summary-bg: #f8f9fa;
+}
+
+/* 다크모드 색상 */
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #e9ecef;
+    --card-bg: #2d2d2d;
+    --border-color: #495057;
+    --hover-bg: #3d3d3d;
+    --input-bg: #2d2d2d;
+    --navbar-bg: #1a1a1a;
+    --footer-bg: #212529;
+    --weather-summary-bg: #3d3d3d;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+main {
+    flex: 1;
+}
+
+/* 네비게이션 */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+/* 카드 스타일 */
+.card {
+    border-radius: 10px;
+    border: none;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+/* 날씨 요약 */
+.weather-summary {
+    background-color: var(--weather-summary-bg);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* 시간별 날씨 아이템 */
+.weather-hour-item {
+    transition: all 0.2s;
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+.weather-hour-item:hover {
+    background-color: var(--hover-bg);
+    transform: translateX(5px);
+}
+
+/* 기온 뱃지 */
+.temp-badge {
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.temp-badge::before {
+    content: '🌡️ ';
+}
+
+/* 강수확률에 따른 색상 */
+.weather-hour-item .bi-droplet {
+    color: var(--info-color);
+}
+
+/* 습도 아이콘 */
+.weather-hour-item .bi-moisture {
+    color: var(--primary-color);
+}
+
+/* 바람 아이콘 */
+.weather-hour-item .bi-wind {
+    color: var(--success-color);
+}
+
+/* 경고 메시지 */
+.alert {
+    border-radius: 8px;
+}
+
+/* 리스트 그룹 */
+.list-group-item {
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.list-group-item-action:hover {
+    background-color: var(--hover-bg);
+}
+
+/* 버튼 */
+.btn {
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 인풋 그룹 */
+.input-group {
+    border-radius: 6px;
+}
+
+.input-group-text {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.form-control {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.form-control:focus {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--primary-color);
+}
+
+/* 로딩 스피너 */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* 네비게이션 다크모드 */
+.navbar-dark {
+    background-color: var(--navbar-bg) !important;
+}
+
+/* 푸터 */
+footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--footer-bg);
+}
+
+/* 로그인/회원가입 페이지 */
+.login-card,
+.register-card {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 반응형: 모바일 */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+    }
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* 스크롤바 커스터마이징 (Chrome/Safari) */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* 다크모드 토글 버튼 */
+.theme-toggle {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    background-color: var(--hover-bg);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: 2px solid var(--border-color);
+}
+
+.theme-toggle:hover {
+    background-color: var(--border-color);
+}
+
+.theme-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+[data-theme="dark"] .theme-toggle-slider {
+    transform: translateX(30px);
+}
+
+/* 다크모드 텍스트 색상 강제 적용 */
+[data-theme="dark"] .text-muted {
+    color: #d1d5db !important;
+}
+
+[data-theme="dark"] .text-primary {
+    color: #60a5fa !important;
+}
+
+[data-theme="dark"] .text-info {
+    color: #22d3ee !important;
+}
+
+[data-theme="dark"] .text-secondary {
+    color: #9ca3af !important;
+}
+
+[data-theme="dark"] .text-warning {
+    color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .text-danger {
+    color: #ef4444 !important;
+}
+
+[data-theme="dark"] .text-success {
+    color: #34d399 !important;
+}
+
+/* 다크모드 배지 색상 */
+[data-theme="dark"] .badge.bg-secondary {
+    background-color: #4b5563 !important;
+    color: #f3f4f6 !important;
+}
+
+/* 다크모드 카드 보더 */
+[data-theme="dark"] .card-body {
+    border-color: #4b5563 !important;
+}
+
+/* 시스템 다크모드 자동 감지 */
+@media (prefers-color-scheme: dark) {
+    /* 사용자가 테마를 명시하지 않았을 때만 적용 */
+    :root:not([data-theme]) {
+        --bg-color: #1a1a1a;
+        --text-color: #e9ecef;
+        --card-bg: #2d2d2d;
+        --border-color: #495057;
+        --hover-bg: #3d3d3d;
+        --input-bg: #2d2d2d;
+        --navbar-bg: #1a1a1a;
+        --footer-bg: #212529;
+        --weather-summary-bg: #3d3d3d;
+    }
+
+    :root:not([data-theme]) .text-muted {
+        color: #d1d5db !important;
+    }
+
+    :root:not([data-theme]) .text-primary {
+        color: #60a5fa !important;
+    }
+
+    :root:not([data-theme]) .text-info {
+        color: #22d3ee !important;
+    }
+
+    :root:not([data-theme]) .text-secondary {
+        color: #9ca3af !important;
+    }
+
+    :root:not([data-theme]) .text-warning {
+        color: #fbbf24 !important;
+    }
+
+    :root:not([data-theme]) .text-danger {
+        color: #ef4444 !important;
+    }
+
+    :root:not([data-theme]) .text-success {
+        color: #34d399 !important;
+    }
+
+    :root:not([data-theme]) .badge.bg-secondary {
+        background-color: #4b5563 !important;
+        color: #f3f4f6 !important;
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python main.py:*)",
+      "Bash(del:*)",
+      "Bash(python reset_db.py:*)",
+      "Bash(python test_recommendation.py:*)",
+      "Bash(python test_extreme_weather.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

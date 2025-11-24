@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}지역 설정 - 새벽런닝 날씨{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2><i class="bi bi-geo-alt"></i> 지역 설정</h2>
+            <p class="text-muted">새벽 운동하는 지역을 최대 5개까지 저장할 수 있습니다</p>
+        </div>
+    </div>
+
+    <!-- 저장된 지역 목록 -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-bookmark-check"></i> 저장된 지역 ({{ saved_locations|length }}/5)
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if saved_locations %}
+            <div class="list-group">
+                {% for location in saved_locations %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">{{ location.region_name }}{% if location.alias %} <small class="text-muted">({{ location.alias }})</small>{% endif %}</h6>
+                        <small class="text-muted">
+                            <i class="bi bi-hash"></i> {{ location.region_code }} |
+                            <i class="bi bi-geo"></i> {{ location.lat }}, {{ location.lng }}
+                        </small>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-danger delete-location"
+                            data-location-id="{{ location.id }}" data-location-name="{{ location.region_name }}">
+                            <i class="bi bi-trash"></i> 삭제
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle"></i> 저장된 지역이 없습니다. 아래에서 지역을 검색하여 추가하세요.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 지역 추가 -->
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-plus-circle"></i> 새 지역 추가
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="search-keyword" class="form-label">지역 검색</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="search-keyword" placeholder="예: 대전 유성구 송강동, 서울 강남구 역삼동">
+                    <button class="btn btn-primary" type="button" id="search-btn">
+                        <i class="bi bi-search"></i> 검색
+                    </button>
+                </div>
+                <div class="form-text">
+                    시/도, 구/군, 동/읍/면 순서로 입력하세요. 전국 21,816개 행정구역 검색 가능합니다.
+                </div>
+            </div>
+
+            <!-- 검색 중 로딩 -->
+            <div id="search-loading" class="text-center d-none">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">검색 중...</span>
+                </div>
+                <p class="mt-2">검색 중...</p>
+            </div>
+
+            <!-- 검색 결과 -->
+            <div id="search-results" class="d-none">
+                <h6 class="border-bottom pb-2">검색 결과</h6>
+                <div id="results-list" class="list-group">
+                    <!-- JavaScript로 채워짐 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 지역 검색
+    document.getElementById('search-btn').addEventListener('click', searchRegion);
+    document.getElementById('search-keyword').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            searchRegion();
+        }
+    });
+
+    async function searchRegion() {
+        const keyword = document.getElementById('search-keyword').value.trim();
+
+        if (!keyword) {
+            alert('검색어를 입력해주세요.');
+            return;
+        }
+
+        // UI 업데이트
+        document.getElementById('search-loading').classList.remove('d-none');
+        document.getElementById('search-results').classList.add('d-none');
+
+        try {
+            const response = await fetch('/api/search_region', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ keyword: keyword })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || '검색 실패');
+            }
+
+            displaySearchResults(data.results);
+
+        } catch (error) {
+            alert('검색 중 오류가 발생했습니다: ' + error.message);
+        } finally {
+            document.getElementById('search-loading').classList.add('d-none');
+        }
+    }
+
+    function displaySearchResults(results) {
+        const resultsList = document.getElementById('results-list');
+        resultsList.innerHTML = '';
+
+        if (results.length === 0) {
+            resultsList.innerHTML = '<div class="alert alert-warning">검색 결과가 없습니다.</div>';
+        } else {
+            results.forEach(result => {
+                const item = document.createElement('a');
+                item.href = '#';
+                item.className = 'list-group-item list-group-item-action';
+                item.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">${result.full_name}</h6>
+                        <small class="text-muted">
+                            <i class="bi bi-geo"></i> ${result.lat.toFixed(6)}, ${result.lng.toFixed(6)}
+                        </small>
+                    </div>
+                    <button class="btn btn-sm btn-success add-location-btn">
+                        <i class="bi bi-plus"></i> 추가
+                    </button>
+                </div>
+            `;
+
+                // 추가 버튼 클릭 이벤트
+                const addBtn = item.querySelector('.add-location-btn');
+                addBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    addLocation(result.full_name, result.lat, result.lng);
+                });
+
+                resultsList.appendChild(item);
+            });
+        }
+
+        document.getElementById('search-results').classList.remove('d-none');
+    }
+
+    async function addLocation(regionName, lat, lng) {
+        // 별칭 입력받기
+        const alias = prompt(`"${regionName}"의 별칭을 입력하세요.\n(예: 우리동네, 회사 등. 취소하면 별칭 없이 저장됩니다)`, '');
+
+        if (alias === null) {
+            // 취소 버튼을 누르면 아무것도 안 함
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/add_location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    region_name: regionName,
+                    lat: lat,
+                    lng: lng,
+                    alias: alias
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || '추가 실패');
+            }
+
+            alert('지역이 추가되었습니다! 날씨 데이터를 가져오는 중입니다...');
+            window.location.reload();
+
+        } catch (error) {
+            alert('지역 추가 중 오류가 발생했습니다: ' + error.message);
+        }
+    }
+
+    // 지역 삭제
+    document.querySelectorAll('.delete-location').forEach(btn => {
+        btn.addEventListener('click', async function () {
+            const locationId = this.dataset.locationId;
+            const locationName = this.dataset.locationName;
+
+            if (!confirm(`"${locationName}"을(를) 삭제하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/delete_location/${locationId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || '삭제 실패');
+                }
+
+                alert('지역이 삭제되었습니다.');
+                window.location.reload();
+
+            } catch (error) {
+                alert('지역 삭제 중 오류가 발생했습니다: ' + error.message);
+            }
+        });
+    });
+</script>
+{% endblock %}

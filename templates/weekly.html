@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}2일간 새벽날씨 - 새벽런닝 날씨{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2><i class="bi bi-calendar-week"></i> 2일간 새벽날씨 예보</h2>
+            <p class="text-muted">내일과 모레 새벽 04:00~07:00 시간대 날씨 예보 (36시간 데이터)</p>
+        </div>
+    </div>
+
+    {% if not weekly_info %}
+    <div class="alert alert-info">
+        <h5><i class="bi bi-info-circle"></i> 저장된 지역이 없습니다</h5>
+        <p class="mb-0">
+            <a href="{{ url_for('settings') }}" class="btn btn-primary">
+                <i class="bi bi-geo-alt"></i> 지역 설정하기
+            </a>
+        </p>
+    </div>
+    {% else %}
+
+    {% for info in weekly_info %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-geo-alt-fill"></i> {{ info.location.region_name }}{% if info.location.alias %} ({{ info.location.alias }}){% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>요일</th>
+                            <th>날씨</th>
+                            <th>기온</th>
+                            <th>강수확률</th>
+                            <th>일출</th>
+                            <th>복장 추천</th>
+                            <th>경고</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for date, data in info.weekly_data.items()|sort %}
+                        <tr {% if loop.index0 == 0 %}class="table-primary"{% elif loop.index0 == 1 %}class="table-info"{% endif %}>
+                            <td>
+                                <strong>{{ date.strftime('%m/%d') }}</strong>
+                                {% if loop.index0 == 0 %}
+                                <span class="badge bg-primary">내일</span>
+                                {% elif loop.index0 == 1 %}
+                                <span class="badge bg-info">모레</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong>{{ data.day_name }}</strong>
+                            </td>
+                            {% if data.summary %}
+                            <td>
+                                <span class="badge bg-secondary">{{ data.summary.avg_weather }}</span>
+                            </td>
+                            <td>
+                                <span class="text-primary">{{ data.summary.min_temp }}</span>~<span class="text-danger">{{ data.summary.max_temp }}</span>°C
+                            </td>
+                            <td>
+                                <span class="badge {% if data.summary.max_precip >= 60 %}bg-danger{% elif data.summary.max_precip >= 40 %}bg-warning{% else %}bg-success{% endif %}">
+                                    {{ data.summary.max_precip }}%
+                                </span>
+                            </td>
+                            <td class="small">
+                                {% if data.sunrise %}
+                                <i class="bi bi-sunrise"></i> {{ data.sunrise.strftime('%H:%M') }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td class="small">
+                                {{ data.summary.outfit }}
+                            </td>
+                            <td>
+                                {% if data.summary.warnings %}
+                                {% for warning in data.summary.warnings %}
+                                <div class="badge bg-warning text-dark mb-1">
+                                    <i class="bi bi-exclamation-triangle"></i> {{ warning|truncate(20) }}
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                <span class="text-success"><i class="bi bi-check-circle"></i> 양호</span>
+                                {% endif %}
+                            </td>
+                            {% else %}
+                            <td colspan="6" class="text-muted">데이터 없음</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% endif %}
+</div>
+{% endblock %}

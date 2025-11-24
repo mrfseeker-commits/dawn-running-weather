@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(python:*)",
+      "Bash(timeout:*)",
+      "Bash(ping:*)",
+      "Bash(nul)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(cmd //c taskkill //PID 32180 //F)",
+      "Bash(cmd //c taskkill //PID 90384 //F)",
+      "Bash(cmd //c taskkill //PID 127984 //F)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
